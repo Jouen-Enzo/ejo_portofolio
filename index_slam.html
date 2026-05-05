@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Portfolio · BTS SIO E5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Cal+Sans&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+
+/* ── TOKENS ── */
+:root{
+  --r:22px;
+  --blur:28px;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+[data-theme="dark"]{
+  --bg:#060810;
+  --s1:rgba(255,255,255,.055);
+  --s2:rgba(255,255,255,.09);
+  --s3:rgba(255,255,255,.14);
+  --b1:rgba(255,255,255,.08);
+  --b2:rgba(255,255,255,.15);
+  --t1:#f0f4ff;
+  --t2:#8892b0;
+  --t3:#4a5370;
+  --a1:#5b9cf6;
+  --a2:#b06ef3;
+  --a3:#37d7b2;
+  --sh:0 2px 60px rgba(0,0,0,.7);
+  --shine:rgba(255,255,255,.06);
+}
+[data-theme="light"]{
+  --bg:#f2f4fb;
+  --s1:rgba(255,255,255,.65);
+  --s2:rgba(255,255,255,.8);
+  --s3:rgba(255,255,255,.95);
+  --b1:rgba(0,10,60,.08);
+  --b2:rgba(0,10,60,.15);
+  --t1:#0d1226;
+  --t2:#4a5680;
+  --t3:#8a94b8;
+  --a1:#3478f6;
+  --a2:#8e44f0;
+  --a3:#0cb891;
+  --sh:0 2px 40px rgba(60,80,180,.1);
+  --shine:rgba(255,255,255,.8);
+}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--t1);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background .5s var(--ease),color .5s var(--ease);
+}
+
+/* ── CANVAS BG ── */
+#bg-canvas{
+  position:fixed;inset:0;
+  z-index:0;pointer-events:none;
+}
+
+/* ── GLASS UTIL ── */
+.g{
+  background:var(--s1);
+  backdrop-filter:blur(var(--blur)) saturate(1.8);
+  -webkit-backdrop-filter:blur(var(--blur)) saturate(1.8);
+  border:1px solid var(--b1);
+  border-radius:var(--r);
+  box-shadow:var(--sh),inset 0 1px 0 var(--shine);
+  transition:background .3s var(--ease),border-color .3s var(--ease),box-shadow .3s var(--ease),transform .4s var(--spring);
+}
+.g:hover{
+  background:var(--s2);
+  border-color:var(--b2);
+  box-shadow:var(--sh),inset 0 1px 0 var(--shine),0 0 0 1.5px rgba(91,156,246,.3);
+}
+
+/* ── NAVBAR PILL ── */
+nav{
+  position:fixed;top:16px;left:50%;
+  transform:translateX(-50%);
+  z-index:1000;
+  display:flex;align-items:center;gap:2px;
+  padding:5px;
+  background:var(--s2);
+  backdrop-filter:blur(40px) saturate(2);
+  -webkit-backdrop-filter:blur(40px) saturate(2);
+  border:1px solid var(--b1);
+  border-radius:60px;
+  box-shadow:var(--sh);
+  transition:all .4s var(--ease);
+}
+.nl{
+  display:flex;align-items:center;gap:6px;
+  font-size:.78rem;font-weight:500;
+  color:var(--t2);
+  padding:7px 16px;
+  border-radius:50px;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .25s var(--ease);
+  white-space:nowrap;
+  border:none;background:transparent;
+}
+.nl svg{width:14px;height:14px;opacity:.7;transition:opacity .2s}
+.nl:hover{color:var(--t1);background:var(--s2);}
+.nl.on{color:var(--t1);background:var(--s3);}
+.nl.on svg{opacity:1}
+
+.logo-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 14px 7px 10px;
+  border-radius:50px;
+  margin-right:4px;
+}
+.logo-dot{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--a1),var(--a2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:600;color:#fff;
+  box-shadow:0 0 12px rgba(91,156,246,.4);
+  animation:logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse{
+  0%,100%{box-shadow:0 0 12px rgba(91,156,246,.4)}
+  50%{box-shadow:0 0 22px rgba(176,110,243,.6)}
+}
+.logo-text{font-size:.8rem;font-weight:600;color:var(--t1)}
+
+.tbtn{
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--b1);
+  background:var(--s1);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s var(--ease);
+  margin-left:4px;
+  color:var(--t2);
+}
+.tbtn:hover{background:var(--s3);transform:rotate(15deg) scale(1.05)}
+.tbtn svg{width:15px;height:15px}
+
+/* ── PAGES ── */
+.page{display:none;position:relative;z-index:1;min-height:100vh;padding:100px 20px 80px}
+.page.on{display:block;animation:pgIn .5s var(--ease) both}
+@keyframes pgIn{from{opacity:0;transform:translateY(20px) scale(.99)}to{opacity:1;transform:none}}
+
+.wrap{max-width:980px;margin:0 auto}
+
+/* ── FADE IN ── */
+.fi{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.fi.v{opacity:1;transform:none}
+.fi:nth-child(1){transition-delay:.05s}
+.fi:nth-child(2){transition-delay:.12s}
+.fi:nth-child(3){transition-delay:.19s}
+.fi:nth-child(4){transition-delay:.26s}
+.fi:nth-child(5){transition-delay:.33s}
+.fi:nth-child(6){transition-delay:.4s}
+
+/* ── HERO ── */
+.hero{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:36px;align-items:center;
+  padding:0 0 40px;
+}
+.avatar-ring{
+  position:relative;width:120px;height:120px;
+  flex-shrink:0;
+}
+.avatar-ring::before{
+  content:'';position:absolute;inset:-4px;
+  border-radius:50%;
+  background:conic-gradient(var(--a1),var(--a2),var(--a3),var(--a1));
+  animation:spin 6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.avatar{
+  position:absolute;inset:3px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--a1) 0%,var(--a2) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;font-weight:600;color:#fff;
+  border:3px solid var(--bg);
+}
+.online{
+  position:absolute;bottom:5px;right:5px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--a3);
+  border:2.5px solid var(--bg);
+  animation:blink 2.5s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.h1{
+  font-size:clamp(2rem,4vw,3rem);
+  font-weight:600;letter-spacing:-.03em;
+  line-height:1.1;margin-bottom:8px;
+  background:linear-gradient(135deg,var(--t1) 40%,var(--a1));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.subtitle{
+  font-size:.9rem;font-weight:500;
+  color:var(--a1);margin-bottom:12px;
+  letter-spacing:.01em;
+}
+.bio{font-size:.88rem;color:var(--t2);line-height:1.75;max-width:480px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 14px;border-radius:40px;
+  font-size:.76rem;font-weight:500;color:var(--t2);
+  background:var(--s1);
+  border:1px solid var(--b1);
+  text-decoration:none;
+  transition:all .25s var(--ease);
+}
+.chip:hover{color:var(--t1);background:var(--s2);border-color:var(--b2);transform:translateY(-1px)}
+.chip svg{width:13px;height:13px;opacity:.7}
+
+/* ── GRID ── */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* ── CARD ── */
+.card{padding:26px}
+.card-label{
+  font-size:.65rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--a1);margin-bottom:18px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-label::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* ── TIMELINE ── */
+.tl{display:flex;flex-direction:column;gap:0}
+.tl-row{display:grid;grid-template-columns:26px 1fr;gap:14px;padding-bottom:18px}
+.tl-left{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));flex-shrink:0}
+.tl-line{flex:1;width:1px;background:linear-gradient(to bottom,var(--b2),transparent);margin-top:5px;min-height:16px}
+.tl-title{font-size:.88rem;font-weight:600;margin-bottom:3px}
+.tl-year{font-size:.7rem;font-weight:600;color:var(--a2);margin-bottom:5px}
+.tl-desc{font-size:.79rem;color:var(--t2);line-height:1.6}
+
+/* ── SKILL BARS ── */
+.sk{display:flex;flex-direction:column;gap:12px}
+.sk-row{display:flex;flex-direction:column;gap:6px}
+.sk-top{display:flex;justify-content:space-between;font-size:.79rem}
+.sk-top span:last-child{color:var(--a1);font-weight:600}
+.sk-track{height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
+.sk-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--a1),var(--a2));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform 1.2s var(--ease);
+}
+.sk-fill.v{transform:scaleX(1)}
+
+/* ── TAG ── */
+.tag{
+  display:inline-flex;align-items:center;
+  font-size:.7rem;font-weight:600;
+  padding:4px 11px;border-radius:20px;margin:3px;
+}
+.tag.blue{background:rgba(91,156,246,.12);color:var(--a1);border:1px solid rgba(91,156,246,.2)}
+.tag.purple{background:rgba(176,110,243,.12);color:var(--a2);border:1px solid rgba(176,110,243,.2)}
+.tag.green{background:rgba(55,215,178,.12);color:var(--a3);border:1px solid rgba(55,215,178,.2)}
+
+/* ── CERTS ── */
+.cert-grid{display:flex;flex-wrap:wrap;gap:12px}
+.cert{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-radius:16px;
+  text-decoration:none;color:var(--t1);
+  cursor:pointer;
+  transition:all .3s var(--spring);
+  flex:1;min-width:160px;
+}
+.cert:hover{transform:translateY(-3px) scale(1.02)}
+.cert-ico{font-size:1.5rem;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--s2);flex-shrink:0}
+.cert-info strong{font-size:.84rem;font-weight:600;display:block}
+.cert-info small{font-size:.7rem;color:var(--t2)}
+.badge{
+  font-size:.6rem;font-weight:700;
+  background:var(--a1);color:#fff;
+  padding:2px 8px;border-radius:20px;
+  margin-left:auto;
+}
+
+/* ── PAGE HEADER ── */
+.ph{text-align:center;margin-bottom:52px}
+.ph-eye{font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--a1);margin-bottom:10px}
+.ph-h{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:600;letter-spacing:-.03em;line-height:1.15;margin-bottom:12px}
+.ph-sub{font-size:.88rem;color:var(--t2);max-width:500px;margin:0 auto;line-height:1.7}
+
+/* ── TABLE ── */
+.tbl-wrap{border-radius:var(--r);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead tr{background:linear-gradient(90deg,rgba(91,156,246,.12),rgba(176,110,243,.1))}
+th{padding:14px 18px;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a1);text-align:left;white-space:nowrap}
+td{padding:13px 18px;border-top:1px solid var(--b1);vertical-align:middle}
+tr{transition:background .2s}
+tr:hover td{background:rgba(91,156,246,.05)}
+.btn-sm{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.73rem;font-weight:600;color:var(--a1);
+  text-decoration:none;padding:5px 13px;
+  border-radius:20px;border:1px solid rgba(91,156,246,.3);
+  background:transparent;
+  cursor:pointer;transition:all .25s var(--ease);
+}
+.btn-sm:hover{background:var(--a1);color:#fff;border-color:var(--a1)}
+
+/* ── DETAIL PANEL ── */
+.detail{display:none;padding:30px;margin-top:18px;animation:pgIn .4s var(--ease) both}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0}
+.detail-sec h4{font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--a1);margin-bottom:10px}
+.detail-sec p{font-size:.84rem;color:var(--t2);line-height:1.7}
+.proof-list{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.proof{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;border-radius:12px;
+  background:var(--s1);border:1px solid var(--b1);
+  font-size:.82rem;
+}
+.proof-n{font-size:.65rem;font-weight:700;color:var(--a1);background:rgba(91,156,246,.15);padding:3px 8px;border-radius:6px;white-space:nowrap}
+.close-btn{
+  margin-top:22px;padding:8px 20px;border-radius:20px;
+  border:1px solid var(--b1);background:var(--s1);
+  color:var(--t2);cursor:pointer;font-size:.8rem;
+  transition:all .25s var(--ease);
+}
+.close-btn:hover{background:var(--s2);color:var(--t1)}
+
+/* ── TOOLS ── */
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:24px}
+.tool{display:flex;align-items:center;gap:14px;padding:20px}
+.tool-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.tool-ic.b{background:rgba(91,156,246,.15)}
+.tool-ic.p{background:rgba(176,110,243,.15)}
+.tool-ic.g{background:rgba(55,215,178,.15)}
+.tool strong{font-size:.86rem;font-weight:600;display:block}
+.tool p{font-size:.76rem;color:var(--t2);margin-top:2px}
+
+/* ── NEWS ── */
+.news{display:flex;flex-direction:column;gap:12px}
+.news-card{display:flex;align-items:flex-start;gap:16px;padding:20px 24px}
+.news-date{font-size:.65rem;font-weight:700;color:var(--a1);background:rgba(91,156,246,.12);padding:4px 10px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.news-title{font-size:.88rem;font-weight:600;margin-bottom:5px}
+.news-body p{font-size:.8rem;color:var(--t2);line-height:1.6}
+
+/* ── RECTO ── */
+.recto-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.recto-card{padding:30px;text-align:center;cursor:default;transition:transform .35s var(--spring)}
+.recto-card:hover{transform:translateY(-5px)}
+.recto-ico{font-size:2.2rem;margin-bottom:14px}
+.recto-card h3{font-size:.95rem;font-weight:600;margin-bottom:8px}
+.recto-card p{font-size:.8rem;color:var(--t2);margin-bottom:18px;line-height:1.6}
+.recto-btn{
+  display:inline-block;font-size:.76rem;font-weight:600;
+  color:var(--a1);text-decoration:none;padding:8px 18px;
+  border-radius:20px;border:1px solid rgba(91,156,246,.3);
+  transition:all .25s var(--ease);
+}
+.recto-btn:hover{background:var(--a1);color:#fff}
+.placeholder{
+  width:100%;height:140px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(91,156,246,.08),rgba(176,110,243,.08));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.78rem;color:var(--t3);
+  border:1.5px dashed var(--b1);margin-top:14px;
+}
+
+/* ── SECTION LABEL ── */
+.sec-label{font-size:.63rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--a1);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:24px;font-size:.73rem;color:var(--t3);position:relative;z-index:1}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .avatar-ring{margin:0 auto}
+  .chips{justify-content:center}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:1fr}
+  nav{top:10px}
+  .nl span{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="logo-pill g" style="border:none;box-shadow:none;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none">
+    <div class="logo-dot">EJO</div>
+    <span class="logo-text">Portfolio</span>
+  </div>
+
+  <button class="nl on" onclick="go('cv',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    <span>CV</span>
+  </button>
+  <button class="nl" onclick="go('rp',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M17 17h.01M14 14h7v7h-7z"/></svg>
+    <span>Réalisations</span>
+  </button>
+  <button class="nl" onclick="go('veille',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Veille</span>
+  </button>
+  <button class="nl" onclick="go('rectorat',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+    <span>Rectorat</span>
+  </button>
+
+  <button class="tbtn" onclick="toggleTheme()" aria-label="Thème">
+    <svg id="theme-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</nav>
+
+<!-- ══════════════════════════════ PAGE CV ══════════════════════════════ -->
+<section id="cv" class="page on">
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero fi">
+    <div class="avatar-ring">
+      <div class="avatar">EJO</div>
+      <div class="online"></div>
+    </div>
+    <div>
+      <div class="h1">Enzo Jouen</div>
+      <div class="subtitle">BTS SIO – SLAM</div>
+      <p class="bio">Passionné par le développement logiciel et la conception d'applications. En quête de projets concrets dans un environnement stimulant et créatif.</p>
+      <div class="chips">
+        <a href="mailto:enzo.jouen@proton.me" class="chip g">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          enzo.jouen@proton.me
+        </a>
+        <a href="tel:+33672954751" class="chip g">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 9a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          06 72 95 47 51
+        </a>
+        <span class="chip g">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Rouen, Normandie, France
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 1 -->
+  <div class="grid2" style="margin-bottom:16px">
+
+    <div class="g card fi">
+      <div class="card-label">Formation</div>
+      <div class="tl">
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-title">BTS SIO – Option SLAM</div>
+            <div class="tl-year">2025 – 2027</div>
+            <div class="tl-desc">Campus La Chataigneraie · Le Mesnil-Esnard<br>Solution Logiciel et Application Métier</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-dot"></div></div>
+          <div>
+            <div class="tl-title">Baccalauréat Pro SN</div>
+            <div class="tl-year">2022 – 2025</div>
+            <div class="tl-desc">Campus La Chataigneraie · Le Mesnil-Esnard · Mention Bien</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g card fi">
+      <div class="card-label">Expériences</div>
+      <div class="tl">
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div>
+            <div class="tl-title">Stage 4 Semaines – Ministère de la Justice – DIT – Antenne Rouen</div>
+            <div class="tl-year">2024</div>
+            <div class="tl-desc">Assistance technique utilisateur, Gestion de parc et entretien ordinateur</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-dot"></div></div>
+          <div>
+            <div class="tl-title">Stage 8 Semaines – Ministère de la Justice – SAR – CA Rouen</div>
+            <div class="tl-year">2023 – 2024</div>
+            <div class="tl-desc">Assistance à l'utilisateur, deploiement de parc informatique.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="grid2" style="margin-bottom:16px">
+
+    <div class="g card fi">
+      <div class="card-label">Compétences techniques</div>
+      <div class="sk">
+        <div class="sk-row">
+          <div class="sk-top"><span>HTML · CSS</span><span>85%</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:85%"></div></div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-top"><span>PHP · SQL · MySQL</span><span>75%</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:75%"></div></div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-top"><span>C# · MAUI</span><span>75%</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:75%"></div></div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-top"><span>Lua</span><span>45%</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:45%"></div></div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-top"><span>Git · GitHub</span><span>75%</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:75%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g card fi">
+      <div class="card-label">Soft skills & Langues</div>
+      <div style="margin-bottom:20px">
+        <span class="tag blue">Esprit d'équipe</span>
+        <span class="tag green">Autonomie</span>
+        <span class="tag purple">Curiosité</span>
+        <span class="tag green">Adaptabilité</span>
+        <span class="tag purple">Pédagogie</span>
+      </div>
+      <div class="sk">
+        <div class="sk-row">
+          <div class="sk-top"><span>Français</span><span>Natif</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:100%"></div></div>
+        </div>
+        <div class="sk-row">
+          <div class="sk-top"><span>Anglais</span><span>C1</span></div>
+          <div class="sk-track"><div class="sk-fill" style="width:85%"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CERTS -->
+  <div class="g card fi" style="margin-bottom:16px">
+    <div class="card-label">Certifications & Cybersécurité</div>
+    <div class="cert-grid">
+      <a href="#" target="_blank" class="cert g">
+        <div class="cert-ico">🛡️</div>
+        <div class="cert-info">
+          <strong>RGPD</strong>
+          <small>Règlement Général Protection Données</small>
+        </div>
+        <span class="badge">5 Modules</span>
+      </a>
+      <a href="https://www.ssi.gouv.fr/" target="_blank" class="cert g">
+        <div class="cert-ico">🔐</div>
+        <div class="cert-info">
+          <strong>ANSSI</strong>
+          <small>Agence Nationale Sécurité SI</small>
+        </div>
+      </a>
+      <a href="https://pix.fr/" target="_blank" class="cert g">
+        <div class="cert-ico">⭐</div>
+        <div class="cert-info">
+          <strong>PIX</strong>
+          <small>Score : 529 / 895 pix</small>
+        </div>
+      </a>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════ PAGE RP ══════════════════════════════ -->
+<section id="rp" class="page">
+<div class="wrap">
+  <div class="ph fi">
+    <div class="ph-eye">Bloc 1 – Compétences mobilisées</div>
+    <h2 class="ph-h">Réalisations professionnelles</h2>
+    <p class="ph-sub">Tableau de synthèse regroupant l'ensemble des réalisations et les compétences associées.</p>
+  </div>
+
+  <div class="g tbl-wrap fi">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Réalisation</th><th>Type</th><th>Compétences</th><th>Accès</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--t3);font-size:.75rem;font-weight:600">01</td>
+          <td><strong>Installation parc informatique</strong></td>
+          <td><span class="tag green">Stage</span></td>
+          <td><span class="tag blue">B1.1</span><span class="tag blue">B1.2</span></td>
+          <td><button class="btn-sm" onclick="showDetail('rp1')">Détail ↗</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--t3);font-size:.75rem;font-weight:600">02</td>
+          <td><strong>Configuration VLAN </strong></td>
+          <td><span class="tag blue">B1.3</span><span class="tag blue">B1.4</span></td>
+          <td><button class="btn-sm" onclick="showDetail('rp2')">Détail ↗</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--t3);font-size:.75rem;font-weight:600">03</td>
+          <td><strong>Serveur VPN OpenVPN</strong></td>
+          <td><span class="tag blue">TP</span></td>
+          <td><span class="tag blue">B1.2</span><span class="tag blue">B1.5</span></td>
+          <td><button class="btn-sm" onclick="showDetail('rp3')">Détail ↗</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--t3);font-size:.75rem;font-weight:600">04</td>
+          <td><strong>Déploiement Active Directory</strong></td>
+          <td><span class="tag blue">B1.1</span><span class="tag blue">B1.3</span><span class="tag blue">B1.6</span></td>
+          <td><button class="btn-sm" onclick="showDetail('rp4')">Détail ↗</button></td>
+        </tr>
+        <tr>
+          <td style="color:var(--t3);font-size:.75rem;font-weight:600">05</td>
+          <td><strong>Analyse sécurité CyberNews</strong></td>
+          <td><span class="tag green">E6 ★</span></td>
+          <td><span class="tag blue">B1.4</span><span class="tag blue">B1.5</span></td>
+          <td><button class="btn-sm" onclick="showDetail('rp5')">Détail ↗</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="detail-panel" class="g detail">
+    <div id="detail-content"></div>
+    <button class="close-btn" onclick="document.getElementById('detail-panel').style.display='none'">✕ Fermer</button>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════ PAGE VEILLE ══════════════════════════ -->
+<section id="veille" class="page">
+<div class="wrap">
+  <div class="ph fi">
+    <div class="ph-eye">Curation mensuelle</div>
+    <h2 class="ph-h">Veille technologique</h2>
+    <p class="ph-sub">Suivi de l'actualité IT & cybersécurité — 2 news minimum par mois à partir de mars.</p>
+  </div>
+
+  <div class="grid2 fi" style="margin-bottom:16px">
+    <div class="g card">
+      <div class="card-label">Thème</div>
+      <p style="font-size:.88rem;color:var(--t2);line-height:1.75">La <strong style="color:var(--t1)">cybersécurité des infrastructures réseaux</strong> : menaces, vulnérabilités, bonnes pratiques et outils de protection dans les environnements professionnels.</p>
+    </div>
+    <div class="g card">
+      <div class="card-label">Bornage</div>
+      <div>
+        <span class="tag blue">🎯 Réseaux d'entreprise</span>
+        <span class="tag green">🔐 Pare-feu & IDS</span>
+        <span class="tag purple">☁️ Cloud & Zero Trust</span>
+        <span class="tag blue">🦠 Malware & Ransomware</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label fi">Outils de veille</div>
+  <div class="tools fi">
+    <div class="g tool">
+      <div class="tool-ic b">📰</div>
+      <div><strong>Feedly</strong><p>Agrégateur RSS – suivi quotidien</p></div>
+    </div>
+    <div class="g tool">
+      <div class="tool-ic p">🔔</div>
+      <div><strong>Google Alertes</strong><p>Alertes automatiques par mots-clés</p></div>
+    </div>
+    <div class="g tool">
+      <div class="tool-ic g">🧪</div>
+      <div><strong>ThreatDown <span class="tag green" style="font-size:.58rem;padding:2px 6px">Nouveau</span></strong><p>Détection de menaces testée ce mois</p></div>
+    </div>
+  </div>
+
+  <div class="g card fi" style="margin-bottom:24px">
+    <div class="card-label">Mise en œuvre</div>
+    <p style="font-size:.86rem;color:var(--t2);line-height:1.75">La veille permet d'identifier rapidement les CVE récentes afin d'appliquer les correctifs sur l'infrastructure en alternance. Elle alimente aussi la rédaction de recommandations internes et la mise à jour des règles pare-feu.</p>
+  </div>
+
+  <div class="sec-label fi">Actualités – Ordre chronologique décroissant</div>
+  <div class="news fi">
+    <div class="g news-card">
+      <div class="news-date">Mai 2025</div>
+      <div class="news-body"><div class="news-title">Faille critique dans Cisco IOS XE</div><p>La CVE-2025-XXXX permet une exécution de code à distance sur équipements non patchés. Application des correctifs Cisco urgente.</p></div>
+    </div>
+    <div class="g news-card">
+      <div class="news-date">Mai 2025</div>
+      <div class="news-body"><div class="news-title">LockBit 4.0 cible les PME françaises</div><p>Campagnes de phishing sophistiquées. La CISA recommande l'activation du MFA sur tous les accès exposés.</p></div>
+    </div>
+    <div class="g news-card">
+      <div class="news-date">Avr. 2025</div>
+      <div class="news-body"><div class="news-title">Zero Trust Network Access : +40% d'adoption</div><p>Les entreprises migrent massivement vers Zero Trust pour sécuriser le télétravail et les accès cloud, selon Gartner.</p></div>
+    </div>
+    <div class="g news-card">
+      <div class="news-date">Avr. 2025</div>
+      <div class="news-body"><div class="news-title">CNIL : sanctions record RGPD</div><p>Plusieurs sanctions majeures contre des entreprises ne respectant pas les obligations de durée de conservation des données.</p></div>
+    </div>
+    <div class="g news-card">
+      <div class="news-date">Mars 2025</div>
+      <div class="news-body"><div class="news-title">CVE-2025-1234 – Vulnérabilité OpenSSH</div><p>Élévation de privilèges sous certaines configurations Linux. Mise à jour vers OpenSSH 9.8 recommandée urgemment.</p></div>
+    </div>
+    <div class="g news-card">
+      <div class="news-date">Mars 2025</div>
+      <div class="news-body"><div class="news-title">Microsoft Entra ID intègre les passkeys FIDO2</div><p>Authentification sans mot de passe native dans Entra ID, renforçant la sécurité des environnements hybrides.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════ PAGE RECTORAT ════════════════════════ -->
+<section id="rectorat" class="page">
+<div class="wrap">
+  <div class="ph fi">
+    <div class="ph-eye">Sous-option E5</div>
+    <h2 class="ph-h">Rectorat</h2>
+    <p class="ph-sub">Documents administratifs et tableau de synthèse pour l'épreuve E5.</p>
+  </div>
+
+  <div class="recto-grid">
+    <div class="g recto-card fi">
+      <div class="recto-ico">📊</div>
+      <h3>Tableau de synthèse</h3>
+      <p>Fichier Excel regroupant toutes les réalisations professionnelles et les compétences mobilisées du Bloc 1.</p>
+      <a href="tableau_synthese.xlsx" target="_blank" class="recto-btn">📥 Télécharger</a>
+    </div>
+    <div class="g recto-card fi">
+      <div class="recto-ico">📄</div>
+      <h3>Attestation Stage – 1ère année</h3>
+      <p>Document à remplacer en juillet par l'attestation officielle signée par le tuteur de stage.</p>
+      <div class="placeholder">🖼️ Image provisoire – juillet</div>
+    </div>
+    <div class="g recto-card fi">
+      <div class="recto-ico">📄</div>
+      <h3>Attestation Stage – 2ème année</h3>
+      <p>Document à remplacer une fois l'attestation de fin de stage de 2ème année disponible.</p>
+      <div class="placeholder">🖼️ Image provisoire</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>Jouen Enzo – Portofolio · 2026</footer>
+
+<script>
+/* ── ANIMATED BACKGROUND ─────────────────────────── */
+(function(){
+  const cv = document.getElementById('bg-canvas');
+  const ctx = cv.getContext('2d');
+  let W,H,pts=[];
+
+  function resize(){
+    W=cv.width=innerWidth;
+    H=cv.height=innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
+
+  function init(){
+    pts=[];
+    const n=Math.min(Math.floor(W*H/14000),70);
+    for(let i=0;i<n;i++){
+      pts.push({
+        x:Math.random()*W,y:Math.random()*H,
+        vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,
+        r:Math.random()*2+1,
+        hue:Math.random()*60+190
+      });
+    }
+  }
+  init();
+  window.addEventListener('resize',init);
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const dark=isDark();
+
+    /* orbs */
+    [[W*.2,H*.25,350,dark?'#5b9cf622':'#3478f614'],
+     [W*.8,H*.6,300,dark?'#b06ef318':'#8e44f012'],
+     [W*.5,H*.85,250,dark?'#37d7b215':'#0cb89110']
+    ].forEach(([x,y,r,c])=>{
+      const g=ctx.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0,c);g.addColorStop(1,'transparent');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+    });
+
+    /* particles */
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=dark?`hsla(${p.hue},80%,70%,.3)`:`hsla(${p.hue},60%,40%,.15)`;
+      ctx.fill();
+    });
+
+    /* lines */
+    ctx.lineWidth=.4;
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<110){
+          const a=(1-d/110)*(dark?.25:.12);
+          ctx.strokeStyle=dark?`rgba(91,156,246,${a})`:`rgba(52,120,246,${a})`;
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── NAVIGATION ────────────────────────────────────── */
+function go(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nl').forEach(l=>l.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  el.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(()=>{initFI();initSK()},60);
+  document.getElementById('detail-panel').style.display='none';
+}
+
+/* ── THEME ─────────────────────────────────────────── */
+function toggleTheme(){
+  const h=document.documentElement;
+  const ico=document.getElementById('theme-ico');
+  if(h.getAttribute('data-theme')==='dark'){
+    h.setAttribute('data-theme','light');
+    ico.innerHTML='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  } else {
+    h.setAttribute('data-theme','dark');
+    ico.innerHTML='<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  }
+}
+
+/* ── FADE IN ───────────────────────────────────────── */
+function initFI(){
+  const page=document.querySelector('.page.on');
+  const els=page?page.querySelectorAll('.fi:not(.v)'):[];
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){setTimeout(()=>e.target.classList.add('v'),i*70);obs.unobserve(e.target);}
+    });
+  },{threshold:.08});
+  els.forEach(el=>obs.observe(el));
+}
+initFI();
+
+/* ── SKILL BARS ────────────────────────────────────── */
+function initSK(){
+  const fills=document.querySelectorAll('.page.on .sk-fill:not(.v)');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('v');obs.unobserve(e.target);}});
+  },{threshold:.3});
+  fills.forEach(f=>obs.observe(f));
+}
+initSK();
+
+/* ── RP DETAIL ─────────────────────────────────────── */
+const rpDB={
+  rp1:{title:'01 – Installation parc informatique',type:'Stage',comp:'B1.1 · B1.2',env:'Windows 10, Active Directory, SCCM, Office 365',ctx:'Dans le cadre du stage de 1ère année, installation et configuration de 20 postes Windows 10 intégrés au domaine AD. Déploiement automatisé via SCCM avec les logiciels métiers.',preuves:['Jonction au domaine Active Directory','Déploiement SCCM automatisé','Stratégies de groupe appliquées']},
+  rp2:{title:'02 – Configuration VLAN entreprise',type:'Alternance',comp:'B1.3 · B1.4',env:'Cisco IOS, Switch Catalyst 2960, Packet Tracer',ctx:'Segmentation réseau par VLANs pour séparer les services (comptabilité, RH, production) sur des switches Cisco. Amélioration de la sécurité inter-services.',preuves:['Configuration switch Cisco','Schéma réseau Visio','Tests connectivité inter-VLAN']},
+  rp3:{title:'03 – Serveur VPN OpenVPN',type:'TP',comp:'B1.2 · B1.5',env:'Debian 12, OpenVPN, PKI, TLS, iptables',ctx:'Déploiement d\'un serveur VPN OpenVPN sous Debian pour accès sécurisé au SI depuis l\'extérieur. Configuration du chiffrement et gestion des certificats PKI.',preuves:['Serveur OpenVPN actif','Connexion client réussie','Logs de connexion sécurisée']},
+  rp4:{title:'04 – Déploiement Active Directory',type:'Alternance',comp:'B1.1 · B1.3 · B1.6',env:'Windows Server 2022, AD DS, DNS, DHCP, GPO',ctx:'Installation d\'un contrôleur de domaine pour une PME de 30 utilisateurs. Mise en place des OU, GPO, politique de mots de passe et intégration des postes.',preuves:['AD Users & Computers','GPO configurées','Test connexion utilisateur']},
+  rp5:{title:'05 – Analyse sécurité CyberNews',type:'E6 – Obligatoire',comp:'B1.4 · B1.5',env:'CyberNews, OWASP, Nmap, BurpSuite, GDPR',ctx:'Audit de sécurité complet du site CyberNews : identification des vulnérabilités, conformité RGPD, analyse des outils de protection, recommandations.',preuves:['Rapport d\'audit complet','Captures des scans Nmap','Analyse conformité RGPD','Recommandations sécurité']}
+};
+
+function showDetail(id){
+  const d=rpDB[id];
+  const panel=document.getElementById('detail-panel');
+  document.getElementById('detail-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+      <h3 style="font-size:1.05rem;font-weight:600;flex:1">${d.title}</h3>
+      <span class="tag ${d.type==='Stage'?'green':d.type.includes('E6')?'green':'purple'}">${d.type}</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-sec">
+        <h4>Compétences mobilisées</h4>
+        <p>${d.comp}</p>
+      </div>
+      <div class="detail-sec">
+        <h4>Environnement technologique</h4>
+        <p>${d.env}</p>
+      </div>
+    </div>
+    <div class="detail-sec" style="margin-bottom:16px">
+      <h4>Contexte</h4>
+      <p>${d.ctx}</p>
+    </div>
+    <div class="detail-sec">
+      <h4>Preuves</h4>
+      <div class="proof-list">
+        ${d.preuves.map((p,i)=>`
+          <div class="proof">
+            <span class="proof-n">P${i+1}</span>
+            <span style="font-size:.82rem">${p}</span>
+            <span style="margin-left:auto;font-size:.85rem;opacity:.5">🖼️</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  panel.style.display='block';
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+</script>
+</body>
+</html>
